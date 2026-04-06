@@ -189,7 +189,7 @@ const Admin = () => {
 
         <section className="container py-6">
           <div className="flex gap-2 mb-6">
-            {(["projects", "submissions"] as const).map((t) => (
+            {(["projects", "submissions", "users"] as const).map((t) => (
               <button
                 key={t}
                 onClick={() => setTab(t)}
@@ -197,7 +197,7 @@ const Admin = () => {
                   tab === t ? "border-primary text-primary bg-primary/10" : "border-border text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {t} ({t === "projects" ? projects.length : submissions.filter((s) => s.status === "pending").length})
+                {t} ({t === "projects" ? projects.length : t === "submissions" ? submissions.filter((s) => s.status === "pending").length : users.length})
               </button>
             ))}
           </div>
