@@ -297,6 +297,45 @@ const Admin = () => {
             </div>
           )}
 
+          {tab === "users" && (
+            <div className="space-y-2">
+              {usersLoading ? (
+                <p className="text-sm text-muted-foreground">Loading architects…</p>
+              ) : users.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No registered architects.</p>
+              ) : (
+                users.map((u) => {
+                  const isUserAdmin = u.roles.includes("admin");
+                  const isSelf = u.user_id === user?.id;
+                  return (
+                    <div key={u.user_id} className="border border-border p-4 flex items-center justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-foreground truncate">{u.display_name || "Unnamed Architect"}</p>
+                        <p className="text-[10px] text-muted-foreground font-mono">
+                          {u.roles.map((r) => r.toUpperCase()).join(" · ") || "USER"}
+                        </p>
+                      </div>
+                      <Button
+                        variant={isUserAdmin ? "destructive" : "outline"}
+                        size="sm"
+                        disabled={isSelf}
+                        onClick={() => toggleAdmin(u.user_id, isUserAdmin)}
+                        className="font-display text-xs tracking-wider h-7"
+                        title={isSelf ? "Cannot change your own role" : ""}
+                      >
+                        {isUserAdmin ? (
+                          <><ShieldOff className="h-3 w-3 mr-1" /> Revoke Admin</>
+                        ) : (
+                          <><Shield className="h-3 w-3 mr-1" /> Grant Admin</>
+                        )}
+                      </Button>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          )}
+
           {tab === "submissions" && (
             <div className="space-y-3">
               {submissions.length === 0 && (
