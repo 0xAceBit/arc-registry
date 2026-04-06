@@ -60,12 +60,52 @@ const Admin = () => {
     if (data) setSubmissions(data);
   };
 
+  const fetchUsers = async () => {
+    setUsersLoading(true);
+    try {
+      const { data: profiles } = await supabase.from("profiles").select("user_id, display_name");
+      const { data: roles } = await supabase.from("user_roles").select("user_id, role");
+      if (profiles) {
+        const roleMap: Record<string, string[]> = {};
+        roles?.forEach((r) => {
+          if (!roleMap[r.user_id]) roleMap[r.user_id] = [];
+          roleMap[r.user_id].push(r.role);
+        });
+        setUsers(
+          profiles.map((p) => ({
+            user_id: p.user_id,
+            display_name: p.display_name,
+            roles: roleMap[p.user_id] || [],
+          }))
+        );
+      }
+    } finally {
+      setUsersLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (isAdmin) {
       fetchProjects();
       fetchSubmissions();
+      fetchUsers();
     }
   }, [isAdmin]);
+
+  const toggleAdmin = async (userId: string, currentlyAdmin: boolean) => {
+    try {
+      if (currentlyAdmin) {
+        await supabase.from("user_roles").delete().eq("user_id", userId).eq("role", "admin");
+        toast({ title: "Admin role removed" });
+      } else {
+        await supabase.from("user_roles").insert({ user_id: userId, role: "admin" as any });
+        toast({ title: "Admin role granted" });
+      }
+      fetchUsers();
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    }
+  };
 
   const saveProject = async () => {
     if (!editing) return;
