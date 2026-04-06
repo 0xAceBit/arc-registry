@@ -15,6 +15,7 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [showVerification, setShowVerification] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -43,10 +44,10 @@ const Auth = () => {
           },
         });
         if (error) throw error;
-        toast({
-          title: "Account Created",
-          description: "Check your email for verification, or log in if auto-confirmed.",
-        });
+        setShowVerification(true);
+        setEmail("");
+        setPassword("");
+        setDisplayName("");
       }
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
