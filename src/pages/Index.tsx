@@ -1,12 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
-import { PROJECTS, type ProjectCategory } from "@/data/projects";
+import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import ProjectCard from "@/components/ProjectCard";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import HeroGrid from "@/components/HeroGrid";
+
+type Project = Tables<"projects">;
+type ProjectCategory = "Internet Capital Markets" | "Stablecoin-native Infrastructure" | "Programmable Settlement";
 
 const categories: (ProjectCategory | "All")[] = [
   "All",
@@ -18,8 +22,23 @@ const categories: (ProjectCategory | "All")[] = [
 const Index = () => {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<ProjectCategory | "All">("All");
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filtered = PROJECTS.filter((p) => {
+  useEffect(() => {
+    const fetchProjects = async () => {
+      const { data } = await supabase
+        .from("projects")
+        .select("*")
+        .order("featured", { ascending: false })
+        .order("created_at", { ascending: false });
+      if (data) setProjects(data);
+      setLoading(false);
+    };
+    fetchProjects();
+  }, []);
+
+  const filtered = projects.filter((p) => {
     const matchesSearch =
       p.name.toLowerCase().includes(search.toLowerCase()) ||
       p.summary.toLowerCase().includes(search.toLowerCase());
@@ -73,8 +92,8 @@ const Index = () => {
               className="flex gap-8 mt-10"
             >
               {[
-                { label: "Projects", value: PROJECTS.length },
-                { label: "Mainnet", value: PROJECTS.filter((p) => p.status === "Mainnet").length },
+                { label: "Projects", value: projects.length },
+                { label: "Mainnet", value: projects.filter((p) => p.status === "Mainnet").length },
                 { label: "Categories", value: 3 },
               ].map((s) => (
                 <div key={s.label}>
@@ -122,7 +141,7 @@ const Index = () => {
         <section className="container py-10">
           <div className="flex items-center justify-between mb-8">
             <span className="font-mono text-[10px] tracking-widest text-muted-foreground uppercase">
-              {filtered.length} Project{filtered.length !== 1 ? "s" : ""} Registered
+              {loading ? "Loading..." : `${filtered.length} Project${filtered.length !== 1 ? "s" : ""} Registered`}
             </span>
           </div>
           <div className="grid gap-5 md:grid-cols-2">
@@ -137,7 +156,7 @@ const Index = () => {
               </motion.div>
             ))}
           </div>
-          {filtered.length === 0 && (
+          {!loading && filtered.length === 0 && (
             <div className="text-center py-16">
               <p className="text-sm text-muted-foreground">No projects match your criteria.</p>
             </div>
