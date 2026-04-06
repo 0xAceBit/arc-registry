@@ -15,6 +15,7 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [showVerification, setShowVerification] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -43,10 +44,10 @@ const Auth = () => {
           },
         });
         if (error) throw error;
-        toast({
-          title: "Account Created",
-          description: "Check your email for verification, or log in if auto-confirmed.",
-        });
+        setShowVerification(true);
+        setEmail("");
+        setPassword("");
+        setDisplayName("");
       }
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
@@ -60,95 +61,116 @@ const Auth = () => {
       <Header />
       <main className="flex-1 flex items-center justify-center py-16">
         <div className="w-full max-w-sm mx-auto">
-          <div className="border border-border p-8 space-y-6">
-            <div className="text-center">
+          {showVerification ? (
+            <div className="border border-border p-8 space-y-6 text-center">
               <p className="font-mono text-[10px] tracking-[0.3em] text-primary uppercase mb-2">
-                Architect Access
+                Verification Required
               </p>
               <h1 className="font-display text-xl font-semibold tracking-tight text-foreground">
-                {isLogin ? "Sign In" : "Register"}
+                Check Your Email
               </h1>
-            </div>
-
-            <div className="flex border border-border">
-              <button
-                onClick={() => setIsLogin(true)}
-                className={`flex-1 py-2 font-mono text-[10px] tracking-widest uppercase transition-colors ${
-                  isLogin ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Login
-              </button>
-              <button
-                onClick={() => setIsLogin(false)}
-                className={`flex-1 py-2 font-mono text-[10px] tracking-widest uppercase transition-colors ${
-                  !isLogin ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Register
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {!isLogin && (
-                <div className="space-y-1.5">
-                  <label className="text-xs text-muted-foreground font-display tracking-wider uppercase">
-                    Display Name
-                  </label>
-                  <Input
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
-                    placeholder="Your builder alias"
-                    className="bg-secondary border-border text-sm"
-                  />
-                </div>
-              )}
-              <div className="space-y-1.5">
-                <label className="text-xs text-muted-foreground font-display tracking-wider uppercase">
-                  Email
-                </label>
-                <Input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="architect@arc.io"
-                  className="bg-secondary border-border text-sm"
-                  required
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-xs text-muted-foreground font-display tracking-wider uppercase">
-                  Password
-                </label>
-                <Input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="bg-secondary border-border text-sm"
-                  required
-                  minLength={6}
-                />
-              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                We've sent a verification link to your inbox. Click the link to activate your account, then return here to sign in.
+              </p>
               <Button
-                type="submit"
-                disabled={submitting}
+                onClick={() => { setShowVerification(false); setIsLogin(true); }}
+                variant="outline"
                 className="w-full font-display tracking-wider text-xs h-10"
               >
-                {submitting ? "Processing..." : isLogin ? "Sign In" : "Create Account"}
+                Back to Sign In
               </Button>
-            </form>
+            </div>
+          ) : (
+            <div className="border border-border p-8 space-y-6">
+              <div className="text-center">
+                <p className="font-mono text-[10px] tracking-[0.3em] text-primary uppercase mb-2">
+                  Architect Access
+                </p>
+                <h1 className="font-display text-xl font-semibold tracking-tight text-foreground">
+                  {isLogin ? "Sign In" : "Register"}
+                </h1>
+              </div>
 
-            <p className="text-center text-[10px] text-muted-foreground">
-              {isLogin ? "No account? " : "Already registered? "}
-              <button
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-primary hover:underline"
-              >
-                {isLogin ? "Register here" : "Sign in"}
-              </button>
-            </p>
-          </div>
+              <div className="flex border border-border">
+                <button
+                  onClick={() => setIsLogin(true)}
+                  className={`flex-1 py-2 font-mono text-[10px] tracking-widest uppercase transition-colors ${
+                    isLogin ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => setIsLogin(false)}
+                  className={`flex-1 py-2 font-mono text-[10px] tracking-widest uppercase transition-colors ${
+                    !isLogin ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Register
+                </button>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {!isLogin && (
+                  <div className="space-y-1.5">
+                    <label className="text-xs text-muted-foreground font-display tracking-wider uppercase">
+                      Display Name
+                    </label>
+                    <Input
+                      value={displayName}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      placeholder="Your builder alias"
+                      className="bg-secondary border-border text-sm"
+                    />
+                  </div>
+                )}
+                <div className="space-y-1.5">
+                  <label className="text-xs text-muted-foreground font-display tracking-wider uppercase">
+                    Email
+                  </label>
+                  <Input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="architect@arc.io"
+                    className="bg-secondary border-border text-sm"
+                    required
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs text-muted-foreground font-display tracking-wider uppercase">
+                    Password
+                  </label>
+                  <Input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="bg-secondary border-border text-sm"
+                    required
+                    minLength={6}
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full font-display tracking-wider text-xs h-10"
+                >
+                  {submitting ? "Processing..." : isLogin ? "Sign In" : "Create Account"}
+                </Button>
+              </form>
+
+              <p className="text-center text-[10px] text-muted-foreground">
+                {isLogin ? "No account? " : "Already registered? "}
+                <button
+                  onClick={() => setIsLogin(!isLogin)}
+                  className="text-primary hover:underline"
+                >
+                  {isLogin ? "Register here" : "Sign in"}
+                </button>
+              </p>
+            </div>
+          )}
         </div>
       </main>
       <Footer />
