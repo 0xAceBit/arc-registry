@@ -9,11 +9,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Trash2, Plus, Check, X, Edit2 } from "lucide-react";
+import { Trash2, Plus, Check, X, Edit2, Shield, ShieldOff } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Project = Tables<"projects">;
 type Submission = Tables<"project_submissions">;
+
+interface UserWithRole {
+  user_id: string;
+  display_name: string | null;
+  roles: string[];
+}
 
 const emptyProject = {
   name: "",
@@ -32,11 +38,13 @@ const Admin = () => {
   const { user, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [tab, setTab] = useState<"projects" | "submissions">("projects");
+  const [tab, setTab] = useState<"projects" | "submissions" | "users">("projects");
   const [projects, setProjects] = useState<Project[]>([]);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [editing, setEditing] = useState<Partial<Project> | null>(null);
   const [isNew, setIsNew] = useState(false);
+  const [users, setUsers] = useState<UserWithRole[]>([]);
+  const [usersLoading, setUsersLoading] = useState(false);
 
   useEffect(() => {
     if (!loading && (!user || !isAdmin)) navigate("/");
@@ -52,12 +60,52 @@ const Admin = () => {
     if (data) setSubmissions(data);
   };
 
+  const fetchUsers = async () => {
+    setUsersLoading(true);
+    try {
+      const { data: profiles } = await supabase.from("profiles").select("user_id, display_name");
+      const { data: roles } = await supabase.from("user_roles").select("user_id, role");
+      if (profiles) {
+        const roleMap: Record<string, string[]> = {};
+        roles?.forEach((r) => {
+          if (!roleMap[r.user_id]) roleMap[r.user_id] = [];
+          roleMap[r.user_id].push(r.role);
+        });
+        setUsers(
+          profiles.map((p) => ({
+            user_id: p.user_id,
+            display_name: p.display_name,
+            roles: roleMap[p.user_id] || [],
+          }))
+        );
+      }
+    } finally {
+      setUsersLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (isAdmin) {
       fetchProjects();
       fetchSubmissions();
+      fetchUsers();
     }
   }, [isAdmin]);
+
+  const toggleAdmin = async (userId: string, currentlyAdmin: boolean) => {
+    try {
+      if (currentlyAdmin) {
+        await supabase.from("user_roles").delete().eq("user_id", userId).eq("role", "admin");
+        toast({ title: "Admin role removed" });
+      } else {
+        await supabase.from("user_roles").insert({ user_id: userId, role: "admin" as any });
+        toast({ title: "Admin role granted" });
+      }
+      fetchUsers();
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    }
+  };
 
   const saveProject = async () => {
     if (!editing) return;
@@ -141,7 +189,7 @@ const Admin = () => {
 
         <section className="container py-6">
           <div className="flex gap-2 mb-6">
-            {(["projects", "submissions"] as const).map((t) => (
+            {(["projects", "submissions", "users"] as const).map((t) => (
               <button
                 key={t}
                 onClick={() => setTab(t)}
@@ -149,7 +197,7 @@ const Admin = () => {
                   tab === t ? "border-primary text-primary bg-primary/10" : "border-border text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {t} ({t === "projects" ? projects.length : submissions.filter((s) => s.status === "pending").length})
+                {t} ({t === "projects" ? projects.length : t === "submissions" ? submissions.filter((s) => s.status === "pending").length : users.length})
               </button>
             ))}
           </div>
@@ -246,6 +294,45 @@ const Admin = () => {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {tab === "users" && (
+            <div className="space-y-2">
+              {usersLoading ? (
+                <p className="text-sm text-muted-foreground">Loading architects…</p>
+              ) : users.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No registered architects.</p>
+              ) : (
+                users.map((u) => {
+                  const isUserAdmin = u.roles.includes("admin");
+                  const isSelf = u.user_id === user?.id;
+                  return (
+                    <div key={u.user_id} className="border border-border p-4 flex items-center justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-foreground truncate">{u.display_name || "Unnamed Architect"}</p>
+                        <p className="text-[10px] text-muted-foreground font-mono">
+                          {u.roles.map((r) => r.toUpperCase()).join(" · ") || "USER"}
+                        </p>
+                      </div>
+                      <Button
+                        variant={isUserAdmin ? "destructive" : "outline"}
+                        size="sm"
+                        disabled={isSelf}
+                        onClick={() => toggleAdmin(u.user_id, isUserAdmin)}
+                        className="font-display text-xs tracking-wider h-7"
+                        title={isSelf ? "Cannot change your own role" : ""}
+                      >
+                        {isUserAdmin ? (
+                          <><ShieldOff className="h-3 w-3 mr-1" /> Revoke Admin</>
+                        ) : (
+                          <><Shield className="h-3 w-3 mr-1" /> Grant Admin</>
+                        )}
+                      </Button>
+                    </div>
+                  );
+                })
+              )}
             </div>
           )}
 
