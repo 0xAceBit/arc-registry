@@ -9,11 +9,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Trash2, Plus, Check, X, Edit2 } from "lucide-react";
+import { Trash2, Plus, Check, X, Edit2, Shield, ShieldOff } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Project = Tables<"projects">;
 type Submission = Tables<"project_submissions">;
+
+interface UserWithRole {
+  user_id: string;
+  display_name: string | null;
+  roles: string[];
+}
 
 const emptyProject = {
   name: "",
