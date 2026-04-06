@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
-import type { Project } from "@/data/projects";
+import type { Tables } from "@/integrations/supabase/types";
 import StatusBadge from "./StatusBadge";
+
+type Project = Tables<"projects">;
 
 const ProjectCard = ({ project }: { project: Project }) => (
   <Link
@@ -27,7 +29,7 @@ const ProjectCard = ({ project }: { project: Project }) => (
           </span>
         </div>
       </div>
-      <StatusBadge status={project.status} />
+      <StatusBadge status={project.status as any} />
     </div>
     <p className="text-sm text-muted-foreground leading-relaxed mb-4 line-clamp-2">
       {project.summary}

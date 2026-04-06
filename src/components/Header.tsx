@@ -1,13 +1,17 @@
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-
-const navItems = [
-  { label: "Registry", path: "/" },
-  { label: "Submit", path: "/submit" },
-];
+import { useAuth } from "@/contexts/AuthContext";
+import { LogOut, Shield, User } from "lucide-react";
 
 const Header = () => {
   const location = useLocation();
+  const { user, isAdmin, signOut } = useAuth();
+
+  const navItems = [
+    { label: "Registry", path: "/" },
+    { label: "Submit", path: "/submit" },
+    ...(isAdmin ? [{ label: "Admin", path: "/admin" }] : []),
+  ];
 
   return (
     <header className="border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-50">
@@ -47,6 +51,32 @@ const Header = () => {
               )}
             </Link>
           ))}
+
+          <div className="ml-2 pl-2 border-l border-border flex items-center gap-1">
+            {user ? (
+              <>
+                <span className="font-mono text-[9px] text-muted-foreground hidden sm:inline truncate max-w-[120px]">
+                  {user.email}
+                </span>
+                {isAdmin && <Shield className="h-3 w-3 text-primary" />}
+                <button
+                  onClick={signOut}
+                  className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                  title="Sign out"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                </button>
+              </>
+            ) : (
+              <Link
+                to="/auth"
+                className="flex items-center gap-1.5 font-display text-xs tracking-wider px-3 py-1.5 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <User className="h-3.5 w-3.5" />
+                Sign In
+              </Link>
+            )}
+          </div>
         </nav>
       </div>
     </header>
