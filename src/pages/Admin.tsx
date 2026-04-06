@@ -38,11 +38,13 @@ const Admin = () => {
   const { user, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [tab, setTab] = useState<"projects" | "submissions">("projects");
+  const [tab, setTab] = useState<"projects" | "submissions" | "users">("projects");
   const [projects, setProjects] = useState<Project[]>([]);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [editing, setEditing] = useState<Partial<Project> | null>(null);
   const [isNew, setIsNew] = useState(false);
+  const [users, setUsers] = useState<UserWithRole[]>([]);
+  const [usersLoading, setUsersLoading] = useState(false);
 
   useEffect(() => {
     if (!loading && (!user || !isAdmin)) navigate("/");
