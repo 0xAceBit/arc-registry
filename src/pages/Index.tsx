@@ -7,7 +7,6 @@ import type { Tables } from "@/integrations/supabase/types";
 import ProjectCard from "@/components/ProjectCard";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import HeroGrid from "@/components/HeroGrid";
 
 type Project = Tables<"projects">;
 type ProjectCategory = "Internet Capital Markets" | "Stablecoin-native Infrastructure" | "Programmable Settlement";
@@ -51,45 +50,39 @@ const Index = () => {
       <Header />
       <main className="flex-1">
         {/* Hero */}
-        <section className="relative border-b border-border overflow-hidden">
-          <HeroGrid />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/60 to-background pointer-events-none" />
-          <div className="container relative py-20 md:py-28">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
+        <section className="border-b border-border">
+          <div className="container py-16 md:py-24">
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.5 }}
+              className="font-body text-sm tracking-wide text-muted-foreground mb-3"
             >
-              <p className="font-mono text-[11px] tracking-[0.4em] text-primary uppercase mb-5">
-                Internet Financial System
-              </p>
-            </motion.div>
+              Internet Financial System
+            </motion.p>
             <motion.h1
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="font-display text-3xl md:text-5xl font-bold tracking-tight text-foreground mb-4 text-glow"
+              transition={{ duration: 0.5, delay: 0.08 }}
+              className="font-display text-4xl md:text-6xl font-semibold tracking-tight text-foreground mb-5 leading-[1.1]"
             >
-              Arc Ecosystem
-              <br />
-              <span className="text-primary">Registry</span>
+              Arc Ecosystem Registry
             </motion.h1>
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-sm md:text-base text-muted-foreground max-w-lg leading-relaxed"
+              transition={{ duration: 0.5, delay: 0.16 }}
+              className="text-base md:text-lg text-muted-foreground max-w-lg leading-relaxed"
             >
-              A technical directory of projects building onchain infrastructure on @Arc.
+              A technical directory of projects building onchain infrastructure on Arc.
               Reviewed for utility, not speculation.
             </motion.p>
 
-            {/* Stats */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.35 }}
-              className="flex gap-8 mt-10"
+              transition={{ duration: 0.5, delay: 0.28 }}
+              className="flex gap-10 mt-10"
             >
               {[
                 { label: "Projects", value: projects.length },
@@ -97,8 +90,8 @@ const Index = () => {
                 { label: "Categories", value: 3 },
               ].map((s) => (
                 <div key={s.label}>
-                  <p className="font-display text-2xl md:text-3xl font-bold text-foreground">{s.value}</p>
-                  <p className="font-mono text-[10px] tracking-widest text-muted-foreground uppercase mt-1">
+                  <p className="font-display text-3xl md:text-4xl font-semibold text-foreground">{s.value}</p>
+                  <p className="font-body text-xs tracking-wide text-muted-foreground mt-1">
                     {s.label}
                   </p>
                 </div>
@@ -108,15 +101,15 @@ const Index = () => {
         </section>
 
         {/* Filters */}
-        <section className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-16 z-40">
-          <div className="container py-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <section className="border-b border-border bg-background sticky top-14 z-40">
+          <div className="container py-3 flex flex-col sm:flex-row items-start sm:items-center gap-3">
             <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search projects..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-9 h-9 bg-secondary border-border text-sm font-body"
+                className="pl-9 h-9 bg-background border-border text-sm font-body"
               />
             </div>
             <div className="flex gap-1.5 flex-wrap">
@@ -124,10 +117,10 @@ const Index = () => {
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`font-mono text-[10px] tracking-wider uppercase px-3 py-1.5 rounded-sm border transition-all duration-200 ${
+                  className={`font-body text-xs px-3 py-1.5 rounded-md border transition-colors ${
                     activeCategory === cat
-                      ? "border-primary text-primary bg-primary/10 border-glow"
-                      : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/30"
+                      ? "border-foreground text-foreground bg-accent font-medium"
+                      : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/40"
                   }`}
                 >
                   {cat}
@@ -140,17 +133,17 @@ const Index = () => {
         {/* Grid */}
         <section className="container py-10">
           <div className="flex items-center justify-between mb-8">
-            <span className="font-mono text-[10px] tracking-widest text-muted-foreground uppercase">
-              {loading ? "Loading..." : `${filtered.length} Project${filtered.length !== 1 ? "s" : ""} Registered`}
+            <span className="font-body text-xs text-muted-foreground">
+              {loading ? "Loading..." : `${filtered.length} project${filtered.length !== 1 ? "s" : ""} registered`}
             </span>
           </div>
-          <div className="grid gap-5 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2">
             {filtered.map((project, i) => (
               <motion.div
                 key={project.id}
-                initial={{ opacity: 0, y: 15 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: i * 0.08 }}
+                transition={{ duration: 0.35, delay: i * 0.06 }}
               >
                 <ProjectCard project={project} />
               </motion.div>
