@@ -1,18 +1,27 @@
 import { useWallet } from "@/contexts/WalletContext";
-import { Wallet, AlertTriangle, X } from "lucide-react";
+import { Wallet, AlertTriangle, X, Plus } from "lucide-react";
 
 const WalletButton = () => {
   const { address, isConnected, isCorrectNetwork, connecting, connectWallet, switchToArcTestnet, disconnect } = useWallet();
 
   if (isConnected && !isCorrectNetwork) {
     return (
-      <button
-        onClick={switchToArcTestnet}
-        className="flex items-center gap-1.5 font-body text-xs px-3 py-1.5 text-status-testnet border border-status-testnet/30 bg-status-testnet/5 hover:bg-status-testnet/10 transition-colors rounded-md"
-      >
-        <AlertTriangle className="h-3 w-3" />
-        Switch Network
-      </button>
+      <div className="flex items-center gap-1.5">
+        <button
+          onClick={switchToArcTestnet}
+          className="flex items-center gap-1.5 font-body text-xs px-3 py-1.5 text-status-testnet border border-status-testnet/30 bg-status-testnet/5 hover:bg-status-testnet/10 transition-colors rounded-md"
+        >
+          <Plus className="h-3 w-3" />
+          Add & Switch Network
+        </button>
+        <button
+          onClick={disconnect}
+          className="p-1.5 text-muted-foreground hover:text-foreground border border-border rounded-md transition-colors"
+          title="Disconnect wallet"
+        >
+          <X className="h-3 w-3" />
+        </button>
+      </div>
     );
   }
 
