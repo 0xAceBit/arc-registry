@@ -1,8 +1,8 @@
 import { useWallet } from "@/contexts/WalletContext";
-import { Wallet, AlertTriangle } from "lucide-react";
+import { Wallet, AlertTriangle, X } from "lucide-react";
 
 const WalletButton = () => {
-  const { address, isConnected, isCorrectNetwork, connecting, connectWallet, switchToArcTestnet } = useWallet();
+  const { address, isConnected, isCorrectNetwork, connecting, connectWallet, switchToArcTestnet, disconnect } = useWallet();
 
   if (isConnected && !isCorrectNetwork) {
     return (
