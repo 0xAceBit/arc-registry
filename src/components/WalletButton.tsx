@@ -21,6 +21,13 @@ const WalletButton = () => {
       <div className="flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground px-3 py-1.5 border border-border rounded-md">
         <span className="h-1.5 w-1.5 rounded-full bg-status-live animate-pulse" />
         {address.slice(0, 6)}...{address.slice(-4)}
+        <button
+          onClick={disconnect}
+          className="ml-1 text-muted-foreground hover:text-foreground transition-colors"
+          title="Disconnect wallet"
+        >
+          <X className="h-3 w-3" />
+        </button>
       </div>
     );
   }
