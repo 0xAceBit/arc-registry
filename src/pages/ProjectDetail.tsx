@@ -41,32 +41,7 @@ const ProjectDetail = () => {
     if (id) fetch();
   }, [id]);
 
-  const handleSubmitInsight = async () => {
-    if (!newInsight.trim() || !user || !project) return;
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("display_name")
-      .eq("user_id", user.id)
-      .single();
 
-    const { error } = await supabase.from("project_insights").insert({
-      project_id: project.id,
-      user_id: user.id,
-      author: profile?.display_name || user.email || "Anonymous",
-      role: "Architect",
-      content: newInsight,
-    });
-
-    if (!error) {
-      const { data: ins } = await supabase
-        .from("project_insights")
-        .select("*")
-        .eq("project_id", project.id)
-        .order("created_at", { ascending: false });
-      setInsights(ins || []);
-      setNewInsight("");
-    }
-  };
 
   if (loading) {
     return (
@@ -176,6 +151,11 @@ const ProjectDetail = () => {
                       <span className="text-[10px] font-medium text-foreground">{insight.author}</span>
                       <span className="text-[10px] text-muted-foreground">· {insight.role}</span>
                       <span className="text-[10px] text-muted-foreground">· {new Date(insight.created_at).toLocaleDateString()}</span>
+                      {(insight as any).tx_hash && (
+                        <span className="text-[9px] font-mono text-primary">
+                          · tx: {(insight as any).tx_hash.slice(0, 10)}...
+                        </span>
+                      )}
                     </div>
                   </div>
                 ))}
