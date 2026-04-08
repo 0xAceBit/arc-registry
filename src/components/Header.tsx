@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { LogOut, Shield, User } from "lucide-react";
+import WalletButton from "@/components/WalletButton";
 
 const Header = () => {
   const location = useLocation();
@@ -52,7 +53,11 @@ const Header = () => {
             </Link>
           ))}
 
-          <div className="ml-2 pl-2 border-l border-border flex items-center gap-1">
+          <div className="ml-1 pl-2 border-l border-border">
+            <WalletButton />
+          </div>
+
+          <div className="ml-1 pl-2 border-l border-border flex items-center gap-1">
             {user ? (
               <>
                 <span className="font-mono text-[9px] text-muted-foreground hidden sm:inline truncate max-w-[120px]">
