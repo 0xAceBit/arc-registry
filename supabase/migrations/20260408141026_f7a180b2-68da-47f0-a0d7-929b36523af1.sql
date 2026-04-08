@@ -1,0 +1,1 @@
+ALTER TABLE public.project_insights ADD COLUMN tx_hash text;
