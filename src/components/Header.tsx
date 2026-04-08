@@ -1,11 +1,14 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { LogOut, Shield, User } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
+import { LogOut, Shield, User, Sun, Moon } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import WalletButton from "@/components/WalletButton";
 
 const Header = () => {
   const location = useLocation();
   const { user, isAdmin, signOut } = useAuth();
+  const { isDark, toggle } = useTheme();
 
   const navItems = [
     { label: "Registry", path: "/" },
@@ -14,7 +17,7 @@ const Header = () => {
   ];
 
   return (
-    <header className="border-b border-border bg-background sticky top-0 z-50">
+    <header className="border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-50">
       <div className="container flex h-14 items-center justify-between">
         <Link to="/" className="flex items-center gap-2 group">
           <span className="text-lg font-display font-bold tracking-tight text-foreground">
@@ -41,7 +44,7 @@ const Header = () => {
             <WalletButton />
           </div>
 
-          <div className="ml-1 pl-2 border-l border-border flex items-center gap-1">
+          <div className="ml-1 pl-2 border-l border-border flex items-center gap-2">
             {user ? (
               <>
                 <span className="font-body text-xs text-muted-foreground hidden sm:inline truncate max-w-[120px]">
@@ -65,6 +68,12 @@ const Header = () => {
                 Sign In
               </Link>
             )}
+
+            <div className="flex items-center gap-1.5 ml-1">
+              <Sun className="h-3.5 w-3.5 text-muted-foreground" />
+              <Switch checked={isDark} onCheckedChange={toggle} className="scale-75" />
+              <Moon className="h-3.5 w-3.5 text-muted-foreground" />
+            </div>
           </div>
         </nav>
       </div>
