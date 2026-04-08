@@ -6,6 +6,7 @@ const ARC_TESTNET = {
   chainName: "Arc Testnet",
   rpcUrls: ["https://rpc.testnet.arc.network"],
   nativeCurrency: { name: "USDC", symbol: "USDC", decimals: 18 },
+  blockExplorerUrls: ["https://testnet.arc.network"],
 };
 
 interface WalletContextType {
