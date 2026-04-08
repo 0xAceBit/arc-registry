@@ -13,7 +13,7 @@ const dotStyles: Record<ProjectStatus, string> = {
 };
 
 const StatusBadge = ({ status }: { status: ProjectStatus }) => (
-  <span className={`inline-flex items-center gap-1.5 font-mono text-[10px] tracking-wider uppercase px-2 py-0.5 border rounded-sm ${statusStyles[status]}`}>
+  <span className={`inline-flex items-center gap-1.5 font-body text-[11px] tracking-wide px-2.5 py-1 border rounded-md ${statusStyles[status]}`}>
     <span className={`h-1.5 w-1.5 rounded-full ${dotStyles[status]}`} />
     {status}
   </span>
