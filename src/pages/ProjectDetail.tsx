@@ -1,13 +1,11 @@
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
 import StatusBadge from "@/components/StatusBadge";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import InsightSubmitForm from "@/components/InsightSubmitForm";
 import { useState, useEffect } from "react";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Project = Tables<"projects">;
@@ -15,11 +13,18 @@ type Insight = Tables<"project_insights">;
 
 const ProjectDetail = () => {
   const { id } = useParams();
-  const { user } = useAuth();
   const [project, setProject] = useState<Project | null>(null);
   const [insights, setInsights] = useState<Insight[]>([]);
-  const [newInsight, setNewInsight] = useState("");
   const [loading, setLoading] = useState(true);
+
+  const fetchInsights = async () => {
+    const { data: ins } = await supabase
+      .from("project_insights")
+      .select("*")
+      .eq("project_id", id!)
+      .order("created_at", { ascending: false });
+    setInsights(ins || []);
+  };
 
   useEffect(() => {
     const fetch = async () => {
