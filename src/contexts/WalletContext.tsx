@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
 import { BrowserProvider, type JsonRpcSigner } from "ethers";
+import { toast } from "sonner";
 
 const ARC_TESTNET = {
   chainId: "0x4CF5D2", // 5042002
@@ -47,8 +48,9 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const connectWallet = useCallback(async () => {
     const provider = getProvider();
     if (!provider) {
+      toast.error("MetaMask not detected. Please install MetaMask to continue.");
       window.open("https://metamask.io/download/", "_blank");
-      throw new Error("MetaMask not installed. Please install MetaMask to continue.");
+      return;
     }
     setConnecting(true);
     try {
@@ -58,6 +60,9 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
       setAddress(addr);
       setSigner(s);
       setChainId(Number(network.chainId));
+      toast.success("Wallet connected!");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to connect wallet");
     } finally {
       setConnecting(false);
     }
@@ -65,14 +70,26 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
 
   const switchToArcTestnet = useCallback(async () => {
     const eth = (window as any).ethereum;
-    if (!eth) return;
+    if (!eth) {
+      toast.error("MetaMask not detected. Please install MetaMask to continue.");
+      window.open("https://metamask.io/download/", "_blank");
+      return;
+    }
     try {
       await eth.request({ method: "wallet_switchEthereumChain", params: [{ chainId: ARC_TESTNET.chainId }] });
+      toast.success("Switched to Arc Testnet!");
     } catch (err: any) {
       if (err.code === 4902) {
-        await eth.request({ method: "wallet_addEthereumChain", params: [ARC_TESTNET] });
+        try {
+          await eth.request({ method: "wallet_addEthereumChain", params: [ARC_TESTNET] });
+          toast.success("Arc Testnet added and switched!");
+        } catch (addErr: any) {
+          toast.error(addErr?.message || "Failed to add Arc Testnet");
+          return;
+        }
       } else {
-        throw err;
+        toast.error(err?.message || "Failed to switch network");
+        return;
       }
     }
     const provider = getProvider();
