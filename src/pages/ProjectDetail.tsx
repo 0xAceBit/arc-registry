@@ -161,32 +161,7 @@ const ProjectDetail = () => {
                 ))}
               </div>
 
-              {user ? (
-                <div className="border-t border-border pt-4 space-y-3">
-                  <p className="font-display text-[10px] tracking-widest text-muted-foreground uppercase">
-                    Submit Insight
-                  </p>
-                  <Textarea
-                    placeholder="Share technical feedback on this deployment..."
-                    value={newInsight}
-                    onChange={(e) => setNewInsight(e.target.value)}
-                    className="text-xs bg-secondary border-border min-h-[80px] resize-none"
-                  />
-                  <Button
-                    onClick={handleSubmitInsight}
-                    className="w-full h-8 text-xs font-display tracking-wider"
-                    disabled={!newInsight.trim()}
-                  >
-                    Submit
-                  </Button>
-                </div>
-              ) : (
-                <div className="border-t border-border pt-4">
-                  <p className="text-xs text-muted-foreground">
-                    <Link to="/auth" className="text-primary hover:underline">Sign in</Link> to submit insights.
-                  </p>
-                </div>
-              )}
+              <InsightSubmitForm projectId={project.id} onInsightAdded={fetchInsights} />
             </section>
 
             {project.documentation && (
