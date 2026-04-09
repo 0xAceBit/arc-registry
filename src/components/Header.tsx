@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
-import { LogOut, Shield, User, Sun, Moon } from "lucide-react";
+import { LogOut, Shield, User, Sun, Moon, Droplets } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import WalletButton from "@/components/WalletButton";
 
