@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
-import { LogOut, Shield, User, Sun, Moon } from "lucide-react";
+import { LogOut, Shield, User, Sun, Moon, Droplets } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import WalletButton from "@/components/WalletButton";
 
@@ -15,6 +15,10 @@ const Header = () => {
     { label: "Submit", path: "/submit" },
     ...(isAdmin ? [{ label: "Admin", path: "/admin" }] : []),
   ];
+
+  const handleFaucet = () => {
+    window.open("https://faucet.circle.com", "_blank", "noopener,noreferrer");
+  };
 
   return (
     <header className="border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-50">
@@ -39,6 +43,13 @@ const Header = () => {
               {item.label}
             </Link>
           ))}
+          <button
+            onClick={handleFaucet}
+            className="font-body text-sm px-3 py-1.5 rounded-md transition-colors text-muted-foreground hover:text-foreground flex items-center gap-1.5"
+          >
+            <Droplets className="h-3.5 w-3.5" />
+            Faucet
+          </button>
 
           <div className="ml-2 pl-2 border-l border-border">
             <WalletButton />
