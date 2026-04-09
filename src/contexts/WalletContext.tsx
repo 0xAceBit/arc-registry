@@ -3,11 +3,11 @@ import { BrowserProvider, type JsonRpcSigner } from "ethers";
 import { toast } from "sonner";
 
 const ARC_TESTNET = {
-  chainId: "0x4CF5D2", // 5042002
+  chainId: "0x4CEF52", // 5042002
   chainName: "Arc Testnet",
-  rpcUrls: ["https://rpc.testnet.arc.network"],
+  rpcUrls: ["https://rpc.testnet.arc.network", "https://arc-testnet.drpc.org"],
   nativeCurrency: { name: "USDC", symbol: "USDC", decimals: 18 },
-  blockExplorerUrls: ["https://testnet.arc.network"],
+  blockExplorerUrls: ["https://testnet.arcscan.app"],
 };
 
 interface WalletContextType {
