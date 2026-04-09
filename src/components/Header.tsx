@@ -43,6 +43,13 @@ const Header = () => {
               {item.label}
             </Link>
           ))}
+          <button
+            onClick={handleFaucet}
+            className="font-body text-sm px-3 py-1.5 rounded-md transition-colors text-muted-foreground hover:text-foreground flex items-center gap-1.5"
+          >
+            <Droplets className="h-3.5 w-3.5" />
+            Faucet
+          </button>
 
           <div className="ml-2 pl-2 border-l border-border">
             <WalletButton />
