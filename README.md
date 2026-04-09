@@ -4,7 +4,7 @@ A professional, institutional-grade web application for tracking, reviewing, and
 
 ## Overview
 
-The Arc Registry serves as a technical directory and review platform for builders ("Architects") contributing to the Arc infrastructure. It provides project discovery, submission workflows, admin management, and secure authentication — all wrapped in a bold, editorial design language.
+The Arc Registry serves as a technical directory and review platform for builders ("Architects") contributing to the Arc infrastructure. It provides project discovery, submission workflows, admin management, wallet-connected onchain reviews, and secure authentication — all wrapped in a bold, editorial design language.
 
 ---
 
@@ -20,6 +20,18 @@ The Arc Registry serves as a technical directory and review platform for builder
 - Authenticated users can submit new projects for review
 - Submissions include contract address, problem solved, documentation links, and infrastructure details
 - Admin approval workflow — submissions start with `pending` status
+
+### 🔗 Wallet Connection & Onchain Reviews
+- MetaMask wallet integration via **ethers.js v6**
+- Connect, disconnect, and manage wallet sessions from the header
+- **Arc Testnet** auto-detection — prompts users to add and switch to the correct network (Chain ID `5042002`)
+- Every review submission hashes its content and broadcasts a transaction to Arc Testnet
+- Transaction hash (`tx_hash`) stored alongside review data for verifiable, tamper-proof records
+- Block explorer integration at [testnet.arcscan.app](https://testnet.arcscan.app)
+
+### 💧 Faucet
+- Quick-access **Faucet** tab in the navigation bar
+- Opens [faucet.circle.com](https://faucet.circle.com) for users to request testnet USDC
 
 ### 🔐 Authentication & Email Verification
 - Email + password registration and login
@@ -39,6 +51,11 @@ The Arc Registry serves as a technical directory and review platform for builder
 - Two roles: `admin` and `user`
 - Default role (`user`) assigned automatically on registration via database trigger
 
+### 🌗 Theme Toggle
+- Light / dark mode switch in the header
+- Persistent preference via `ThemeContext`
+- Animated background orbs that adapt to the active theme
+
 ### 🎨 Design
 - Dark, editorial aesthetic with monospace accents and bold typography
 - Animated hero grid with featured project cards
@@ -55,6 +72,8 @@ The Arc Registry serves as a technical directory and review platform for builder
 | Styling | Tailwind CSS v3, shadcn/ui, Framer Motion |
 | Backend | Lovable Cloud (Supabase) |
 | Auth | Email + password with email verification |
+| Wallet | ethers.js v6, MetaMask |
+| Network | Arc Testnet (Chain ID 5042002) |
 | Database | PostgreSQL with Row-Level Security |
 | Routing | React Router v6 |
 | State | TanStack React Query |
@@ -65,9 +84,9 @@ The Arc Registry serves as a technical directory and review platform for builder
 
 ```
 src/
-├── components/       # Shared UI components (Header, Footer, ProjectCard, etc.)
+├── components/       # Shared UI components (Header, Footer, ProjectCard, WalletButton, etc.)
 │   └── ui/           # shadcn/ui primitives
-├── contexts/         # AuthContext with role-based access
+├── contexts/         # AuthContext, WalletContext, ThemeContext
 ├── data/             # Static project seed data
 ├── hooks/            # Custom hooks (toast, mobile detection)
 ├── integrations/     # Supabase client & auto-generated types
@@ -85,7 +104,19 @@ src/
 | `user_roles` | Role assignments (`admin` / `user`) per user |
 | `projects` | Approved project registry entries |
 | `project_submissions` | Pending submissions awaiting admin review |
-| `project_insights` | User-contributed commentary on projects |
+| `project_insights` | User-contributed reviews with optional `tx_hash` for onchain verification |
+
+---
+
+## Arc Testnet Configuration
+
+| Field | Value |
+|-------|-------|
+| Chain ID | `5042002` (`0x4CEF52`) |
+| RPC URLs | `https://rpc.testnet.arc.network`, `https://arc-testnet.drpc.org` |
+| Native Currency | USDC (18 decimals) |
+| Block Explorer | [testnet.arcscan.app](https://testnet.arcscan.app) |
+| Faucet | [faucet.circle.com](https://faucet.circle.com) |
 
 ---
 
@@ -96,7 +127,7 @@ src/
 | `/` | Public | Homepage with hero grid and project directory |
 | `/auth` | Public | Login and registration |
 | `/submit` | Authenticated | Submit a new project |
-| `/project/:id` | Public | Project detail and insights |
+| `/project/:id` | Public | Project detail, insights, and onchain review submission |
 | `/admin` | Admin only | Management dashboard |
 
 ---
