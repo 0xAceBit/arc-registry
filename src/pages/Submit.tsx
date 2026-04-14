@@ -148,6 +148,27 @@ const Submit = () => {
                   <label className="text-xs text-muted-foreground font-display tracking-wider uppercase">Summary</label>
                   <Textarea value={form.summary} onChange={(e) => update("summary", e.target.value)} placeholder="Brief description of your project's utility..." className="bg-secondary border-border text-sm min-h-[80px] resize-none" />
                 </div>
+                <div className="space-y-2">
+                  <label className="text-xs text-muted-foreground font-display tracking-wider uppercase">Project Image</label>
+                  {imagePreview ? (
+                    <div className="relative w-full h-40 border border-border rounded-sm overflow-hidden bg-secondary">
+                      <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={removeImage}
+                        className="absolute top-2 right-2 p-1 bg-background/80 rounded-sm hover:bg-background transition-colors"
+                      >
+                        <X className="h-3.5 w-3.5 text-foreground" />
+                      </button>
+                    </div>
+                  ) : (
+                    <label className="flex flex-col items-center justify-center w-full h-32 border border-dashed border-border rounded-sm bg-secondary cursor-pointer hover:border-primary/50 transition-colors">
+                      <Upload className="h-5 w-5 text-muted-foreground mb-2" />
+                      <span className="text-xs text-muted-foreground">Click to upload (max 5MB)</span>
+                      <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                    </label>
+                  )}
+                </div>
               </div>
 
               <div className="border border-border p-6 space-y-5">
