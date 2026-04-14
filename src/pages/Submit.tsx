@@ -9,11 +9,14 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
+import { Upload, X } from "lucide-react";
 
 const Submit = () => {
   const { toast } = useToast();
   const { user } = useAuth();
   const [submitting, setSubmitting] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: "",
     category: "",
@@ -24,6 +27,22 @@ const Submit = () => {
     infrastructure: "",
   });
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Max 5MB allowed.", variant: "destructive" });
+      return;
+    }
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+  };
+
   const update = (field: string, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }));
 
@@ -33,6 +52,21 @@ const Submit = () => {
     setSubmitting(true);
 
     try {
+      let imageUrl: string | null = null;
+
+      if (imageFile && user) {
+        const ext = imageFile.name.split(".").pop();
+        const path = `${user.id}/${Date.now()}.${ext}`;
+        const { error: uploadError } = await supabase.storage
+          .from("project-images")
+          .upload(path, imageFile);
+        if (uploadError) throw uploadError;
+        const { data: publicData } = supabase.storage
+          .from("project-images")
+          .getPublicUrl(path);
+        imageUrl = publicData.publicUrl;
+      }
+
       const { error } = await supabase.from("project_submissions").insert({
         user_id: user.id,
         name: form.name,
@@ -42,6 +76,7 @@ const Submit = () => {
         documentation: form.documentation || null,
         problem_solved: form.problemSolved,
         infrastructure: form.infrastructure || null,
+        image_url: imageUrl,
       });
       if (error) throw error;
       toast({
@@ -49,6 +84,7 @@ const Submit = () => {
         description: `${form.name} has been submitted for review. An Arc reviewer will assess the deployment.`,
       });
       setForm({ name: "", category: "", summary: "", documentation: "", contractAddress: "", problemSolved: "", infrastructure: "" });
+      removeImage();
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     } finally {
@@ -111,6 +147,27 @@ const Submit = () => {
                 <div className="space-y-2">
                   <label className="text-xs text-muted-foreground font-display tracking-wider uppercase">Summary</label>
                   <Textarea value={form.summary} onChange={(e) => update("summary", e.target.value)} placeholder="Brief description of your project's utility..." className="bg-secondary border-border text-sm min-h-[80px] resize-none" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs text-muted-foreground font-display tracking-wider uppercase">Project Image</label>
+                  {imagePreview ? (
+                    <div className="relative w-full h-40 border border-border rounded-sm overflow-hidden bg-secondary">
+                      <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={removeImage}
+                        className="absolute top-2 right-2 p-1 bg-background/80 rounded-sm hover:bg-background transition-colors"
+                      >
+                        <X className="h-3.5 w-3.5 text-foreground" />
+                      </button>
+                    </div>
+                  ) : (
+                    <label className="flex flex-col items-center justify-center w-full h-32 border border-dashed border-border rounded-sm bg-secondary cursor-pointer hover:border-primary/50 transition-colors">
+                      <Upload className="h-5 w-5 text-muted-foreground mb-2" />
+                      <span className="text-xs text-muted-foreground">Click to upload (max 5MB)</span>
+                      <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                    </label>
+                  )}
                 </div>
               </div>
 
