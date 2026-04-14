@@ -6,14 +6,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/AuthContext";
+import { useWallet } from "@/contexts/WalletContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Link } from "react-router-dom";
-import { Upload, X } from "lucide-react";
+import { Upload, X, Wallet } from "lucide-react";
 
 const Submit = () => {
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { address, isConnected, connectWallet } = useWallet();
   const [submitting, setSubmitting] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -48,15 +47,15 @@ const Submit = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!isConnected || !address) return;
     setSubmitting(true);
 
     try {
       let imageUrl: string | null = null;
 
-      if (imageFile && user) {
+      if (imageFile) {
         const ext = imageFile.name.split(".").pop();
-        const path = `${user.id}/${Date.now()}.${ext}`;
+        const path = `wallet/${address}/${Date.now()}.${ext}`;
         const { error: uploadError } = await supabase.storage
           .from("project-images")
           .upload(path, imageFile);
@@ -68,7 +67,6 @@ const Submit = () => {
       }
 
       const { error } = await supabase.from("project_submissions").insert({
-        user_id: user.id,
         name: form.name,
         category: form.category,
         summary: form.summary,
@@ -114,14 +112,15 @@ const Submit = () => {
         </section>
 
         <section className="container py-8 max-w-2xl">
-          {!user ? (
+          {!isConnected ? (
             <div className="border border-border p-8 text-center space-y-4">
               <p className="text-sm text-muted-foreground">
-                You need to be signed in to submit a project.
+                Connect your wallet to submit a project.
               </p>
-              <Link to="/auth">
-                <Button className="font-display tracking-wider text-xs">Sign In</Button>
-              </Link>
+              <Button onClick={connectWallet} className="font-display tracking-wider text-xs">
+                <Wallet className="h-3.5 w-3.5 mr-2" />
+                Connect Wallet
+              </Button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">

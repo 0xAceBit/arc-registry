@@ -1,11 +1,9 @@
 import { useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
 import { useWallet } from "@/contexts/WalletContext";
 import { supabase } from "@/integrations/supabase/client";
 import { keccak256, toUtf8Bytes } from "ethers";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import { Loader2, Wallet } from "lucide-react";
 
 interface Props {
@@ -14,14 +12,13 @@ interface Props {
 }
 
 const InsightSubmitForm = ({ projectId, onInsightAdded }: Props) => {
-  const { user } = useAuth();
-  const { isConnected, isCorrectNetwork, signer, connectWallet, switchToArcTestnet } = useWallet();
+  const { address, isConnected, isCorrectNetwork, signer, connectWallet, switchToArcTestnet } = useWallet();
   const [content, setContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState("");
 
   const handleSubmit = async () => {
-    if (!content.trim() || !user || !signer) return;
+    if (!content.trim() || !signer || !address) return;
     setSubmitting(true);
     setStatus("Hashing review content...");
 
@@ -31,7 +28,6 @@ const InsightSubmitForm = ({ projectId, onInsightAdded }: Props) => {
       const hash = keccak256(toUtf8Bytes(payload));
 
       setStatus("Confirm transaction in your wallet...");
-      const address = await signer.getAddress();
       const tx = await signer.sendTransaction({
         to: address,
         value: 0n,
@@ -43,16 +39,11 @@ const InsightSubmitForm = ({ projectId, onInsightAdded }: Props) => {
       const txHash = receipt?.hash || tx.hash;
 
       setStatus("Saving review to database...");
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("display_name")
-        .eq("user_id", user.id)
-        .single();
+      const shortAddr = `${address.slice(0, 6)}...${address.slice(-4)}`;
 
       const { error } = await supabase.from("project_insights").insert({
         project_id: projectId,
-        user_id: user.id,
-        author: profile?.display_name || user.email || "Anonymous",
+        author: shortAddr,
         role: "Architect",
         content,
         tx_hash: txHash,
@@ -70,16 +61,6 @@ const InsightSubmitForm = ({ projectId, onInsightAdded }: Props) => {
       setSubmitting(false);
     }
   };
-
-  if (!user) {
-    return (
-      <div className="border-t border-border pt-4">
-        <p className="text-xs text-muted-foreground">
-          <Link to="/auth" className="text-primary hover:underline">Sign in</Link> to submit insights.
-        </p>
-      </div>
-    );
-  }
 
   return (
     <div className="border-t border-border pt-4 space-y-3">
