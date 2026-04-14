@@ -206,21 +206,46 @@ const Auth = () => {
                   </button>
                 </p>
                 {isLogin && (
-                  <p className="text-center text-[10px] text-muted-foreground">
-                    Didn't receive confirmation?{" "}
-                    <button
-                      onClick={() => {
-                        if (email) {
-                          handleResendConfirmation(email);
-                        } else {
-                          toast({ title: "Enter email", description: "Type your email above first, then click resend.", variant: "destructive" });
-                        }
-                      }}
-                      className="text-primary hover:underline"
-                    >
-                      Resend link
-                    </button>
-                  </p>
+                  <>
+                    <p className="text-center text-[10px] text-muted-foreground">
+                      Forgot password?{" "}
+                      <button
+                        onClick={async () => {
+                          if (!email) {
+                            toast({ title: "Enter email", description: "Type your email above first.", variant: "destructive" });
+                            return;
+                          }
+                          try {
+                            const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                              redirectTo: `${window.location.origin}/reset-password`,
+                            });
+                            if (error) throw error;
+                            toast({ title: "Reset link sent", description: `Password reset link sent to ${email}. Check your inbox.` });
+                          } catch (err: any) {
+                            toast({ title: "Error", description: err.message, variant: "destructive" });
+                          }
+                        }}
+                        className="text-primary hover:underline"
+                      >
+                        Reset it
+                      </button>
+                    </p>
+                    <p className="text-center text-[10px] text-muted-foreground">
+                      Didn't receive confirmation?{" "}
+                      <button
+                        onClick={() => {
+                          if (email) {
+                            handleResendConfirmation(email);
+                          } else {
+                            toast({ title: "Enter email", description: "Type your email above first, then click resend.", variant: "destructive" });
+                          }
+                        }}
+                        className="text-primary hover:underline"
+                      >
+                        Resend link
+                      </button>
+                    </p>
+                  </>
                 )}
               </div>
             </div>
