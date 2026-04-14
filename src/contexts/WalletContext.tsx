@@ -46,14 +46,21 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const connectWallet = useCallback(async () => {
-    const provider = getProvider();
-    if (!provider) {
+    const eth = (window as any).ethereum;
+    if (!eth) {
       toast.error("MetaMask not detected. Please install MetaMask to continue.");
       window.open("https://metamask.io/download/", "_blank");
       return;
     }
     setConnecting(true);
     try {
+      // Request accounts explicitly first to avoid unhandled rejections
+      const accounts: string[] = await eth.request({ method: "eth_requestAccounts" });
+      if (!accounts || accounts.length === 0) {
+        toast.error("No accounts found. Please unlock MetaMask.");
+        return;
+      }
+      const provider = new BrowserProvider(eth);
       const s = await provider.getSigner();
       const addr = await s.getAddress();
       const network = await provider.getNetwork();
@@ -62,7 +69,11 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
       setChainId(Number(network.chainId));
       toast.success("Wallet connected!");
     } catch (err: any) {
-      toast.error(err?.message || "Failed to connect wallet");
+      if (err?.code === 4001) {
+        toast.error("Connection rejected by user.");
+      } else {
+        toast.error(err?.shortMessage || err?.message || "Failed to connect wallet");
+      }
     } finally {
       setConnecting(false);
     }
