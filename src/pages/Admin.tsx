@@ -15,7 +15,7 @@ type Project = Tables<"projects">;
 type Submission = Tables<"project_submissions">;
 
 // Hardcoded admin wallet address — update this to your wallet address
-const ADMIN_WALLET_ADDRESS = "YOUR_WALLET_ADDRESS_HERE";
+const ADMIN_WALLET_ADDRESS = "0x362f5b4391AC51a56b13F9A63E98bB95731E86a3";
 
 const emptyProject = {
   name: "",
