@@ -84,6 +84,7 @@ const Submit = () => {
         description: `${form.name} has been submitted for review. An Arc reviewer will assess the deployment.`,
       });
       setForm({ name: "", category: "", summary: "", documentation: "", contractAddress: "", problemSolved: "", infrastructure: "" });
+      removeImage();
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     } finally {
