@@ -11,6 +11,7 @@ import ProjectDetail from "./pages/ProjectDetail.tsx";
 import Submit from "./pages/Submit.tsx";
 import Auth from "./pages/Auth.tsx";
 import Admin from "./pages/Admin.tsx";
+import ResetPassword from "./pages/ResetPassword.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 // force rebuild 2026-04-14
