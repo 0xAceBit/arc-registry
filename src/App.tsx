@@ -13,6 +13,7 @@ import Auth from "./pages/Auth.tsx";
 import Admin from "./pages/Admin.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
+// force rebuild 2026-04-14
 const queryClient = new QueryClient();
 
 const App = () => (
