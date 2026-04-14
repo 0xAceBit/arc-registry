@@ -52,6 +52,21 @@ const Submit = () => {
     setSubmitting(true);
 
     try {
+      let imageUrl: string | null = null;
+
+      if (imageFile && user) {
+        const ext = imageFile.name.split(".").pop();
+        const path = `${user.id}/${Date.now()}.${ext}`;
+        const { error: uploadError } = await supabase.storage
+          .from("project-images")
+          .upload(path, imageFile);
+        if (uploadError) throw uploadError;
+        const { data: publicData } = supabase.storage
+          .from("project-images")
+          .getPublicUrl(path);
+        imageUrl = publicData.publicUrl;
+      }
+
       const { error } = await supabase.from("project_submissions").insert({
         user_id: user.id,
         name: form.name,
@@ -61,6 +76,7 @@ const Submit = () => {
         documentation: form.documentation || null,
         problem_solved: form.problemSolved,
         infrastructure: form.infrastructure || null,
+        image_url: imageUrl,
       });
       if (error) throw error;
       toast({
