@@ -50,7 +50,7 @@ export type Database = {
           project_id: string
           role: string
           tx_hash: string | null
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           author: string
@@ -60,7 +60,7 @@ export type Database = {
           project_id: string
           role?: string
           tx_hash?: string | null
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           author?: string
@@ -70,7 +70,7 @@ export type Database = {
           project_id?: string
           role?: string
           tx_hash?: string | null
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -96,7 +96,7 @@ export type Database = {
           status: string
           summary: string
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           category: string
@@ -111,7 +111,7 @@ export type Database = {
           status?: string
           summary: string
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           category?: string
@@ -126,7 +126,7 @@ export type Database = {
           status?: string
           summary?: string
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
