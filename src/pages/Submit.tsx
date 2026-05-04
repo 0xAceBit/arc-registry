@@ -175,6 +175,10 @@ const Submit = () => {
               <div className="border border-border p-6 space-y-5">
                 <p className="font-display text-xs tracking-widest text-primary uppercase">Technical Information</p>
                 <div className="space-y-2">
+                  <label className="text-xs text-muted-foreground font-display tracking-wider uppercase">Website</label>
+                  <Input value={form.website} onChange={(e) => update("website", e.target.value)} placeholder="https://yourproject.io" className="bg-secondary border-border text-sm" />
+                </div>
+                <div className="space-y-2">
                   <label className="text-xs text-muted-foreground font-display tracking-wider uppercase">Onchain Contract Address</label>
                   <Input value={form.contractAddress} onChange={(e) => update("contractAddress", e.target.value)} placeholder="0x..." className="bg-secondary border-border text-sm font-display" />
                 </div>
