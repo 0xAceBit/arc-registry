@@ -1,0 +1,1 @@
+ALTER TABLE public.project_submissions ADD COLUMN website text;
