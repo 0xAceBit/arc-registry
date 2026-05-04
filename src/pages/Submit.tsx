@@ -20,6 +20,7 @@ const Submit = () => {
     name: "",
     category: "",
     summary: "",
+    website: "",
     documentation: "",
     contractAddress: "",
     problemSolved: "",
@@ -70,6 +71,7 @@ const Submit = () => {
         name: form.name,
         category: form.category,
         summary: form.summary,
+        website: form.website || null,
         contract_address: form.contractAddress,
         documentation: form.documentation || null,
         problem_solved: form.problemSolved,
@@ -81,7 +83,7 @@ const Submit = () => {
         title: "Submission Received",
         description: `${form.name} has been submitted for review. An Arc reviewer will assess the deployment.`,
       });
-      setForm({ name: "", category: "", summary: "", documentation: "", contractAddress: "", problemSolved: "", infrastructure: "" });
+      setForm({ name: "", category: "", summary: "", website: "", documentation: "", contractAddress: "", problemSolved: "", infrastructure: "" });
       removeImage();
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
@@ -172,6 +174,10 @@ const Submit = () => {
 
               <div className="border border-border p-6 space-y-5">
                 <p className="font-display text-xs tracking-widest text-primary uppercase">Technical Information</p>
+                <div className="space-y-2">
+                  <label className="text-xs text-muted-foreground font-display tracking-wider uppercase">Website</label>
+                  <Input value={form.website} onChange={(e) => update("website", e.target.value)} placeholder="https://yourproject.io" className="bg-secondary border-border text-sm" />
+                </div>
                 <div className="space-y-2">
                   <label className="text-xs text-muted-foreground font-display tracking-wider uppercase">Onchain Contract Address</label>
                   <Input value={form.contractAddress} onChange={(e) => update("contractAddress", e.target.value)} placeholder="0x..." className="bg-secondary border-border text-sm font-display" />

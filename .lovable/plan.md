@@ -1,14 +1,23 @@
+## Add Website field to Technical Information
 
+Add a new "Website" input to the Technical Information block on the Submit page so projects can include their main URL alongside docs and contract address.
 
-## Plan: Trigger a Fresh Deployment
+### Changes
 
-**Problem**: The "Update" button is grayed out because the system doesn't detect any new changes to deploy.
+**1. `src/pages/Submit.tsx`**
+- Add `website: ""` to the form state and to the form reset on success.
+- Add a new field in the Technical Information section (placed first, above Onchain Contract Address):
+  - Label: "Website"
+  - Placeholder: `https://yourproject.io`
+  - Bound to `form.website` via `update("website", ...)`
+- Pass `website: form.website || null` into the `project_submissions` insert payload.
 
-**Solution**: Make a minor, harmless code change (like adding a comment or updating a timestamp) to trigger the build system to recognize a new version, then you can click "Update" to publish.
+**2. Database — `project_submissions` table**
+- Add nullable `website` column (`text`) via migration so the new field can be stored. Existing rows remain valid (nullable, no default needed).
 
-### Steps
-1. Add a small comment to `src/App.tsx` (e.g., `// force rebuild`) — this is invisible to users but triggers a new build
-2. After the change, click **Publish → Update** to deploy the latest version with the correct environment variables baked in
+**3. Optional surfacing (not included unless requested)**
+- Displaying the website on the project detail/listing pages is out of scope for this change. If you want it shown publicly on project cards or detail pages too, say the word and I'll wire that up next.
 
-This will resolve the blank page issue on the published site by ensuring the build includes the proper configuration.
-
+### Notes
+- Field is optional (not added to `isValid` validation), matching how Documentation is treated.
+- No admin panel changes needed; admins continue to delete entries as before.

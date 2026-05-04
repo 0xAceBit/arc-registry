@@ -97,6 +97,7 @@ export type Database = {
           summary: string
           updated_at: string
           user_id: string | null
+          website: string | null
         }
         Insert: {
           category: string
@@ -112,6 +113,7 @@ export type Database = {
           summary: string
           updated_at?: string
           user_id?: string | null
+          website?: string | null
         }
         Update: {
           category?: string
@@ -127,6 +129,7 @@ export type Database = {
           summary?: string
           updated_at?: string
           user_id?: string | null
+          website?: string | null
         }
         Relationships: []
       }
