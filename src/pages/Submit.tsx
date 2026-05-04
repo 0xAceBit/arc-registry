@@ -20,6 +20,7 @@ const Submit = () => {
     name: "",
     category: "",
     summary: "",
+    website: "",
     documentation: "",
     contractAddress: "",
     problemSolved: "",
